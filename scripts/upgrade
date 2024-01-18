@@ -21,7 +21,13 @@ if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Upgrading source files..." --weight=1
 
-	ynh_setup_source --dest_dir="$install_dir" --keep="config/.env"
+	if ynh_compare_current_package_version --comparison le --version 3.0.0~ynh1
+	then
+		ynh_script_progression --message="Doing a full replace for major upgrade to v3"
+		ynh_setup_source --dest_dir="$install_dir" --keep="config/.env" --full_replace=1
+	else
+		ynh_setup_source --dest_dir="$install_dir" --keep="config/.env"
+	fi
 fi
 
 chmod -R o-rwx "$install_dir"
